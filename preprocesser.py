@@ -13,7 +13,7 @@ def sma(df):
 
     windows_sma = [5,10,20,60]
     for window in windows_sma:
-        df['sma%d'% window] = talib.SMA(np.asarray(df['close'], dtype = 'f8'), window)
+        df['close_ma%d'% window] = talib.SMA(np.asarray(df['close'], dtype = 'f8'), window)
         #df['sma_%d_ratio'% window] = df['close'] / df['sma%d' % window]
     return df
 
@@ -25,7 +25,7 @@ def sma(df):
 def vma(df):
     windows_vol = [5,10,20,60]
     for window in windows_vol:
-        df['volume%d'% window] = talib.SMA(np.asarray(df['volume'], dtype = 'f8'), window)
+        df['volume_ma%d'% window] = talib.SMA(np.asarray(df['volume'], dtype = 'f8'), window)
         #df['volume_ma%d_ratio'% window] = df['volume'] / df['volume%d' % window]
     return df
 
@@ -53,9 +53,7 @@ def rsi(df):
 
 #이동평균 컨버전스/ 다이버전스
 def macd(df):
-    macd, macdsignal, macdhist = talib.MACD(np.asarray(df['close'], dtype = 'f8'),12,26,9)
-    df['macd'] = macd
-    df['macd_signal'] = macdsignal
+    df['macd'], df['macdsignal'], df['macdhist'] = talib.MACD(np.asarray(df['close'], dtype = 'f8'),12,26,9)
     #df['macd_signal_ratio'] = df['macd'] / df['macd_signal']
     return df
 
