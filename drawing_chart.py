@@ -10,7 +10,6 @@ lightblue = "rgb(173, 216, 230)"
 grey = "rgb(128, 128, 128)"
 black = "rgb(0, 0, 0)"
 
-
 def drawing_chart(df):
     #----------------Create the layout object -------------------------
 
@@ -27,7 +26,7 @@ def drawing_chart(df):
                 # Legend
                 # showlegend = False,
                 legend = dict(bgcolor = 'rgba(0, 0, 0, 0.00)', x = 0.01, y = 0.99, xanchor = 'left', yanchor = 'top', tracegroupgap = 10),
-                font = dict(size = 12, color = '#222222'),
+                font = dict(size = 10, color = '#222222'),
                 #x축
                 xaxis = dict(
                         # Range
@@ -99,7 +98,7 @@ def drawing_chart(df):
                         linecolor = grey,
                         mirror = True
                         #titlefont = dict(size = 10),
-                        ),                
+                        ),
                 )
 
 
