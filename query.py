@@ -41,4 +41,20 @@ def query_ohlcv(shcode, fr = '20190101',to = today):
     conn.close()
     return daily
     
-
+def query_ohlcv_month(shcode, to = '20190101'):
+    
+    conn = sqlite3.connect("t1305_3.db")
+    cur = conn.cursor()
+    query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
+            from 종목별체결조회 \
+            where 1=1 \
+            and 일자 <= '%s' \
+            and 종목코드 = '%s' \
+            ;" % (to,shcode)
+    cur.execute(query)
+    query_result = cur.fetchall()
+    fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
+    monthly = fin_result.sort_values(by = ['date']).reset_index(drop = True)
+    conn.close()
+    return monthly
+    
