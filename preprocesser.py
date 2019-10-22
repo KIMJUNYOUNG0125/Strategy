@@ -18,6 +18,17 @@ def sma(df):
         #df['sma_%d_ratio'% window] = df['close'] / df['sma%d' % window]
     return df
 
+
+def sma_mothly(df):
+
+    windows_sma = [5,20]
+    for window in windows_sma:
+        df['close_ma%d'% window] = talib.SMA(np.asarray(df['close'], dtype = 'f8'), window)
+        #df['sma_%d_ratio'% window] = df['close'] / df['sma%d' % window]
+    return df
+
+
+
 def marking_cross_sma(df):
     
     prev_close_ma5 = df['close_ma5'].shift(1)
