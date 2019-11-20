@@ -205,7 +205,7 @@ class t8425(XAQuery):
 
     def GetResult(self):
         XAQueryEvents.status = False
-        return DataFrame(data=self.result, columns=['업종명', '업종코드'])
+        return DataFrame(data=self.result, columns=['테마명', '테마코드'])
 
 
 '''주식현재가(시세)조회'''

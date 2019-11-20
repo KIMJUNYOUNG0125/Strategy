@@ -13,8 +13,8 @@ def Waiting():
         pythoncom.PumpWaitingMessages()
 
 
-bot = telegram.Bot(token = '888304273:AAFE-VXdeXDyJpDvCqvTz5GdjKzVaJ_P28M')
-chatid = '821788432'
+bot = telegram.Bot(token = '')
+chatid = ''
 #
 now = datetime.datetime.now()
 now_time = '%s-%s-%s_%s:%s:%s' % ( now.year, now.month, now.day, now.hour, now.minute, now.second)
