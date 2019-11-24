@@ -566,8 +566,8 @@ class t1516(XAQuery):
 
 
         self.result2 = []
-        nCount = self.ActiveX.GetBlockCount(self.OUTBLOCK1)
-        for i in range(nCount):
+        nCount2 = self.ActiveX.GetBlockCount(self.OUTBLOCK1)
+        for i in range(nCount2):
             종목명 = self.ActiveX.GetFieldData(self.OUTBLOCK1, "hname", i).strip()
             현재가 = self.toint(self.ActiveX.GetFieldData(self.OUTBLOCK1, "price", i))
             전일대비구분 = self.ActiveX.GetFieldData(self.OUTBLOCK1, "sign", i).strip()
@@ -637,8 +637,8 @@ class t1537(XAQuery):
 
 
         self.result2 = []
-        nCount = self.ActiveX.GetBlockCount(self.OUTBLOCK1)
-        for i in range(nCount):
+        nCount2 = self.ActiveX.GetBlockCount(self.OUTBLOCK1)
+        for i in range(nCount2):
             종목명 = self.ActiveX.GetFieldData(self.OUTBLOCK1, "hname", i).strip()
             현재가 = int(self.ActiveX.GetFieldData(self.OUTBLOCK1, "price", i).strip())
             전일대비구분 = self.ActiveX.GetFieldData(self.OUTBLOCK1, "sign", i).strip()
