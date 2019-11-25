@@ -18,10 +18,10 @@ def query_shcode_list_today():
     conn.close()
     return shcode_list
 
-
-
 today = datetime.datetime.now().strftime("%Y%m%d")
 
+
+#1 일봉
 #1.시세데이터 뽑기_t1305_1
 
 def query_ohlcv(shcode, fr = '20190101',to = today):
@@ -32,8 +32,7 @@ def query_ohlcv(shcode, fr = '20190101',to = today):
             from 종목별체결조회 \
             where 1=1 \
             and 일자 between '%s' and '%s' \
-            and 종목코드 = '%s' \
-            and 일주월구분 = '%s' ;" % (fr,to,shcode,'1')
+            and 종목코드 = '%s' ;" % (fr,to,shcode)
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
@@ -52,8 +51,7 @@ def query_t1305(shcode, fr = '20190101',to = today):
             from 종목별체결조회 \
             where 1=1 \
             and 일자 between '%s' and '%s' \
-            and 종목코드 = '%s' \
-            and 일주월구분 = '%s' ;" % (fr,to,shcode,'1')
+            and 종목코드 = '%s' ;" % (fr,to,shcode)
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
@@ -63,6 +61,51 @@ def query_t1305(shcode, fr = '20190101',to = today):
     conn.close()
     return daily
     
+
+#2 주봉
+#1.시세데이터 뽑기_t1305_2
+
+def query_ohlcv_week(shcode, to = today):
+    
+    conn = sqlite3.connect("t1305_2.db")
+    cur = conn.cursor()
+    query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
+            from 종목별체결조회 \
+            where 1=1 \
+            and 일자 <= '%s' \
+            and 종목코드 = '%s' \
+            ;" % (to,shcode)
+    cur.execute(query)
+    query_result = cur.fetchall()
+    fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
+    weekly = fin_result.sort_values(by = ['date']).reset_index(drop = True)
+    conn.close()
+    return weekly
+    
+
+#2 기타정보뽑기 t1305_2
+def query_t1305_week(shcode, fr = '20180101' ,to = today):
+    
+    conn = sqlite3.connect("t1305_2.db")
+    cur = conn.cursor()
+    query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
+            , 체결강도,  소진율, 회전율, 외인순매수, 기관순매수, 개인순매수\
+            from 종목별체결조회 \
+            where 1=1 \
+            and 일자 between '%s' and '%s' \
+            and 종목코드 = '%s' \
+            ;" % (fr,to,shcode)
+    cur.execute(query)
+    query_result = cur.fetchall()
+    fin_result = pd.DataFrame(query_result,
+                                columns = ['date', 'open', 'high', 'low', 'close', 'volume',
+                                        'deal_f','burn_ratio','rotate_ratio','for_net_buy','com_net_buy','per_net_buy'])
+    weekly = fin_result.sort_values(by = ['date']).reset_index(drop = True)
+    conn.close()
+    return weekly
+
+
+#3 월봉
 #1.시세데이터 뽑기_t1305_3
 
 def query_ohlcv_month(shcode, to = today):
