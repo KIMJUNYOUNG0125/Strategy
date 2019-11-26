@@ -63,6 +63,11 @@ def vma(df):
     return df
 
 
+def obv(df):
+    df['obv'] = talib.OBV(np.asarray(df['close'], dtype = 'f8'), np.asarray(df['volume'], dtype = 'f8'))
+    #df['obv_signal'] = 
+    return df
+
 
 '''
 4.rsi구하기
