@@ -65,16 +65,17 @@ def query_t1305(shcode, fr = '20190101',to = today):
 #2 주봉
 #1.시세데이터 뽑기_t1305_2
 
-def query_ohlcv_week(shcode, to = today):
+def query_ohlcv_week(shcode, fr = '20180101', to = today):
     
     conn = sqlite3.connect("t1305_2.db")
     cur = conn.cursor()
     query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
             from 종목별체결조회 \
             where 1=1 \
+            and 일자 >= '%s' \
             and 일자 <= '%s' \
             and 종목코드 = '%s' \
-            ;" % (to,shcode)
+            ;" % (fr,to,shcode)
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
@@ -84,7 +85,7 @@ def query_ohlcv_week(shcode, to = today):
     
 
 #2 기타정보뽑기 t1305_2
-def query_t1305_week(shcode, fr = '20180101' ,to = today):
+def query_t1305_week(shcode, fr = '20180101', to = today):
     
     conn = sqlite3.connect("t1305_2.db")
     cur = conn.cursor()
@@ -92,7 +93,8 @@ def query_t1305_week(shcode, fr = '20180101' ,to = today):
             , 체결강도,  소진율, 회전율, 외인순매수, 기관순매수, 개인순매수\
             from 종목별체결조회 \
             where 1=1 \
-            and 일자 between '%s' and '%s' \
+            and 일자 >= '%s' \
+            and 일자 <= '%s' \
             and 종목코드 = '%s' \
             ;" % (fr,to,shcode)
     cur.execute(query)
@@ -108,16 +110,17 @@ def query_t1305_week(shcode, fr = '20180101' ,to = today):
 #3 월봉
 #1.시세데이터 뽑기_t1305_3
 
-def query_ohlcv_month(shcode, to = today):
+def query_ohlcv_month(shcode, fr = '20180101', to = today):
     
     conn = sqlite3.connect("t1305_3.db")
     cur = conn.cursor()
     query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
             from 종목별체결조회 \
             where 1=1 \
+            and 일자 >= '%s' \
             and 일자 <= '%s' \
             and 종목코드 = '%s' \
-            ;" % (to,shcode)
+            ;" % (fr,to,shcode)
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
@@ -127,7 +130,7 @@ def query_ohlcv_month(shcode, to = today):
     
 
 #2 기타정보뽑기 t1305_3
-def query_t1305_month(shcode, fr = '20180101' ,to = today):
+def query_t1305_month(shcode, fr = '20180101', to = today):
     
     conn = sqlite3.connect("t1305_3.db")
     cur = conn.cursor()
@@ -135,7 +138,8 @@ def query_t1305_month(shcode, fr = '20180101' ,to = today):
             , 체결강도,  소진율, 회전율, 외인순매수, 기관순매수, 개인순매수\
             from 종목별체결조회 \
             where 1=1 \
-            and 일자 between '%s' and '%s' \
+            and 일자 >= '%s' \
+            and 일자 <= '%s' \
             and 종목코드 = '%s' \
             ;" % (fr,to,shcode)
     cur.execute(query)
