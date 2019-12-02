@@ -72,8 +72,7 @@ def query_ohlcv_week(shcode, fr = '20180101', to = today):
     query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
             from 종목별체결조회 \
             where 1=1 \
-            and 일자 >= '%s' \
-            and 일자 <= '%s' \
+            and 일자 between '%s' and '%s' \
             and 종목코드 = '%s' \
             ;" % (fr,to,shcode)
     cur.execute(query)
@@ -93,8 +92,7 @@ def query_t1305_week(shcode, fr = '20180101', to = today):
             , 체결강도,  소진율, 회전율, 외인순매수, 기관순매수, 개인순매수\
             from 종목별체결조회 \
             where 1=1 \
-            and 일자 >= '%s' \
-            and 일자 <= '%s' \
+            and 일자 between '%s' and '%s' \
             and 종목코드 = '%s' \
             ;" % (fr,to,shcode)
     cur.execute(query)
@@ -117,8 +115,7 @@ def query_ohlcv_month(shcode, fr = '20180101', to = today):
     query = "select 일자, 시가, 고가, 저가, 종가, 누적거래량 \
             from 종목별체결조회 \
             where 1=1 \
-            and 일자 >= '%s' \
-            and 일자 <= '%s' \
+            and 일자 between '%s' and '%s' \
             and 종목코드 = '%s' \
             ;" % (fr,to,shcode)
     cur.execute(query)
@@ -138,8 +135,7 @@ def query_t1305_month(shcode, fr = '20180101', to = today):
             , 체결강도,  소진율, 회전율, 외인순매수, 기관순매수, 개인순매수\
             from 종목별체결조회 \
             where 1=1 \
-            and 일자 >= '%s' \
-            and 일자 <= '%s' \
+            and 일자 between '%s' and '%s' \
             and 종목코드 = '%s' \
             ;" % (fr,to,shcode)
     cur.execute(query)
@@ -150,9 +146,9 @@ def query_t1305_month(shcode, fr = '20180101', to = today):
     monthly = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
     return monthly
-    
-#
 
+
+# 대표업종 추출
 def query_up_distinct():
     
     conn = sqlite3.connect("t1516.db")
@@ -170,6 +166,7 @@ def query_up_distinct():
     conn.close()
     return fin_result
 
+# 대표테마 추출
 def query_tm_distinct():
     
     conn = sqlite3.connect("t1537.db")
@@ -183,6 +180,37 @@ def query_tm_distinct():
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
                                 columns = ['date', 'tmcode', 'tmname', 'shcode', 'shname','now_p', 'total_value'])
+    fin_result = fin_result.sort_values(by = ['date']).reset_index(drop = True)
+    conn.close()
+    return fin_result
+
+
+# 투자자별동향 추출
+def query_jupo(shcode, fr = '2010101', to = today):
+    
+    conn = sqlite3.connect("t1717.db")
+    cur = conn.cursor()
+    query = "select     일자, 종목코드, 종가, 사모펀드_순매수, 증권_순매수, 보험_순매수, 투신_순매수, 은행_순매수,\
+                        종금_순매수, 기금_순매수, 기타법인_순매수_, 개인_순매수, 등록외국인_순매수, \
+                        미등록외국인_순매수, 국가외_순매수, 기관_순매수, 외인계_순매수, 기타계_순매수, \
+                        사모펀드_단가, 증권_단가, 보험_단가, 투신_단가, 은행_단가,\
+                        종금_단가, 기금_단가, 기타법인_단가_, 개인_단가, 등록외국인_단가, \
+                        미등록외국인_단가, 국가외_단가, 기관_단가, 외인계_단가, 기타계_단가, \
+            from        투자자별동향 \
+            where       1=1 \
+            and 일자 between '%s' and '%s' \
+            and         종목코드 = '%s' \
+            ;" % (fr,to,shcode)
+    cur.execute(query)
+    query_result = cur.fetchall()
+    fin_result = pd.DataFrame(query_result,
+                                columns = ['date', 'shcode', 'close',  
+                                        'samo_vol', 'sec_vol', 'ins_vol', 'tusin_vol', 'bank_vol',
+                                        'jong_vol', 'fund_vol', 'etcom_vol', 'per_vol', 'for_reg_vol',
+                                        'for_noreg_vol', 'nat_no_vol', 'com_vol', 'for_vol', 'etc_vol',
+                                        'samo_dan', 'sec_dan', 'ins_dan', 'tusin_dan', 'bank_dan',
+                                        'jong_dan', 'fund_dan', 'etcom_dan', 'per_dan', 'for_reg_dan',
+                                        'for_noreg_dan', 'nat_no_dan', 'com_dan', 'for_dan', 'etc_dan'])
     fin_result = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
     return fin_result
