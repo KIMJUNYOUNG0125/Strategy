@@ -153,33 +153,34 @@ def query_up_distinct():
     
     conn = sqlite3.connect("t1516.db")
     cur = conn.cursor()
-    query = "select distinct     max(일자) as 일자, min(CAST(업종코드 AS INT)) as 업종코드, 업종명, 종목코드, 현재가, 시가총액, 거래대금, PER \
+    query = "select distinct     max(일자) as 일자, min(CAST(업종코드 AS INT)) as 업종코드, 업종명, 종목코드\
             from                업종별종목코드 \
             where               1=1 \
-            group by            종목코드, 현재가, 시가총액, 거래대금, PER \
+            group by            종목코드 \
             ;"
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
-                                columns = ['date', 'upcode', 'upname', 'shcode', 'now_p', 'total_value', 'trans_money', 'per'])
+                                columns = ['date', 'upcode', 'upname', 'shcode'])
     fin_result = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
     return fin_result
+
 
 #5. 대표테마 추출
 def query_tm_distinct():
     
     conn = sqlite3.connect("t1537.db")
     cur = conn.cursor()
-    query = "select distinct    max(일자) as 일자, max(CAST(테마코드 AS INT)) as 테마코드, 테마명, 종목코드, 종목명, 현재가, 시가총액\
+    query = "select distinct    max(일자) as 일자, max(CAST(테마코드 AS INT)) as 테마코드, 테마명, 종목코드, 종목명\
             from                테마별종목코드 \
             where               1=1 \
-            group by            종목코드, 종목명, 현재가, 시가총액 \
+            group by            종목코드, 종목명 \
             ;"
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
-                                columns = ['date', 'tmcode', 'tmname', 'shcode', 'shname','now_p', 'total_value'])
+                                columns = ['date', 'tmcode', 'tmname', 'shcode', 'shname'])
     fin_result = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
     return fin_result
@@ -221,7 +222,7 @@ def query_jupo_vol(shcode, fr = '2010101', to = today):
     
     conn = sqlite3.connect("t1717.db")
     cur = conn.cursor()
-    query = "select     일자, 종목코드, 종가, 사모펀드_순매수, 증권_순매수, 보험_순매수, 투신_순매수, 은행_순매수,\
+    query = "select     일자, 종목코드, 사모펀드_순매수, 증권_순매수, 보험_순매수, 투신_순매수, 은행_순매수,\
                         종금_순매수, 기금_순매수, 기타법인_순매수, 개인_순매수, 등록외국인_순매수, \
                         미등록외국인_순매수, 국가외_순매수, 기관_순매수, 외인계_순매수, 기타계_순매수\
             from        투자자별동향 \
@@ -232,7 +233,7 @@ def query_jupo_vol(shcode, fr = '2010101', to = today):
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
-                                columns = ['date', 'shcode', 'close',  
+                                columns = ['date', 'shcode',   
                                         'samo_vol', 'sec_vol', 'ins_vol', 'tusin_vol', 'bank_vol',
                                         'jong_vol', 'fund_vol', 'etcom_vol', 'per_vol', 'for_reg_vol',
                                         'for_noreg_vol', 'nat_no_vol', 'com_vol', 'for_vol', 'etc_vol'])
@@ -275,18 +276,25 @@ def query_finance(shcode):
     
     conn = sqlite3.connect("t1102.db")
     cur = conn.cursor()
-    query = "select     일자, 종목코드, 시가, 누적거래량, 누적거래대금,\
-                        최고가_52, 최고가일_52, 최저가_52, 최저가일_52, 소진율, 회전율, PER,\
-                        상장주식수_천, 증거금율, 수량단위, 시가총액\
-            from        종목별체결조회 \
+    query = "select     a.일자, a.종목코드, a.시가, a.누적거래량, a.누적거래대금, \
+                        a.최고가_52, a.최고가일_52, a.최저가_52, a.최저가일_52, a.소진율, a.회전율, a.PER, \
+                        a.상장주식수_천, a.증거금율, a.수량단위, a.시가총액 \
+            from        종목별체결조회 a \
+	    inner join	(select max(일자) as 최대일자, \
+				종목코드 \
+			from	종목별체결조회 \
+                        where   종목코드 = '%s'   \
+			group by 종목코드 \
+                        ) b \
+		on	a.일자 = b.최대일자 and	a.종목코드 = b.종목코드 \
             where       1=1 \
-            and         종목코드 = '%s' \
-            ;"          % (shcode)
+            and         a.종목코드 = '%s' \
+            ;" % (shcode, shcode)
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
                                 columns = ['date', 'shcode', 'close', 'volume', 'volume_money',
-                                'high_52', 'high_52_day', 'high_52', 'high_52_day', 'rotate_ratio','burn_ratio', 'per',
+                                'high_52', 'high_52_day', 'low_52', 'low_52_day', 'rotate_ratio','burn_ratio', 'per',
                                 'total_vol', 'ev_ratio', 'vol_scale', 'market_value'])
     fin_result = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
