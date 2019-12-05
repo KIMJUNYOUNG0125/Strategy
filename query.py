@@ -5,6 +5,8 @@ import sqlite3
 
 
 
+today = datetime.datetime.now().strftime("%Y%m%d")
+
 #0.종목코드열람
 def query_shcode_list_today():
     conn = sqlite3.connect("t8430.db")
@@ -18,13 +20,11 @@ def query_shcode_list_today():
     conn.close()
     return shcode_list
 
-today = datetime.datetime.now().strftime("%Y%m%d")
-
 
 #1 일봉
 #1-1.시세데이터 뽑기_t1305_1
 
-def query_ohlcv(shcode, fr = '20190101',to = today):
+def query_ohlcv(shcode, fr = '20180101',to = today):
     
     conn = sqlite3.connect("t1305_1.db")
     cur = conn.cursor()
@@ -42,7 +42,7 @@ def query_ohlcv(shcode, fr = '20190101',to = today):
     
 #1-2 기타정보뽑기 t1305_1
 
-def query_t1305(shcode, fr = '20190101',to = today):
+def query_t1305(shcode, fr = '20180101',to = today):
     
     conn = sqlite3.connect("t1305_1.db")
     cur = conn.cursor()
@@ -60,7 +60,41 @@ def query_t1305(shcode, fr = '20190101',to = today):
     daily = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
     return daily
+
+#1-3 주단위확인
+
+def query_ohlcv_t1102(shcode, to = today):
     
+    conn = sqlite3.connect("t1102.db")
+    cur = conn.cursor()
+    query = "select 일자, 시가, 고가, 저가, 현재가, 누적거래량 \
+            from 종목별체결조회 \
+            where 1=1 \
+            and 일자 <= '%s' \
+            and 종목코드 = '%s' ;" % (to,shcode)
+    cur.execute(query)
+    query_result = cur.fetchall()
+    fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
+    daily = fin_result.sort_values(by = ['date']).reset_index(drop = True)
+    conn.close()
+    return daily
+
+
+def query_ohlcv_now(shcode):
+    
+    conn = sqlite3.connect("t1102_now.db")
+    cur = conn.cursor()
+    query = "select 일자, 시가, 고가, 저가, 현재가, 누적거래량 \
+            from 종목별체결조회 \
+            where 1=1 \
+            and 종목코드 = '%s' ;" % (shcode)
+    cur.execute(query)
+    query_result = cur.fetchall()
+    fin_result = pd.DataFrame(query_result, columns = ['date', 'open', 'high', 'low', 'close', 'volume'])
+    daily = fin_result.sort_values(by = ['date']).reset_index(drop = True)
+    conn.close()
+    return daily
+
 
 #2 주봉
 #2-1.시세데이터 뽑기_t1305_2
