@@ -206,15 +206,15 @@ def query_tm_distinct():
     
     conn = sqlite3.connect("t1537.db")
     cur = conn.cursor()
-    query = "select distinct    max(일자) as 일자, max(CAST(테마코드 AS INT)) as 테마코드, 테마명, 종목코드, 종목명\
+    query = "select distinct    max(일자) as 일자, max(CAST(테마코드 AS INT)) as 테마코드, 테마명, 종목코드\
             from                테마별종목코드 \
             where               1=1 \
-            group by            종목코드, 종목명 \
+            group by            종목코드 \
             ;"
     cur.execute(query)
     query_result = cur.fetchall()
     fin_result = pd.DataFrame(query_result,
-                                columns = ['date', 'tmcode', 'tmname', 'shcode', 'shname'])
+                                columns = ['date', 'tmcode', 'tmname', 'shcode'])
     fin_result = fin_result.sort_values(by = ['date']).reset_index(drop = True)
     conn.close()
     return fin_result
